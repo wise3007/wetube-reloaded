@@ -1,0 +1,9 @@
+extends base.pug
+include mixins/video
+
+block content
+    ul
+        each video in videos
+            +video(video)
+        else
+            li 등록된 콘텐츠가 없습니다.
