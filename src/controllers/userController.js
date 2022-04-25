@@ -146,6 +146,43 @@ export const finishGithubLogin = async (req, res) => {
     return res.redirect("/login");
   }
 };
+
+export const startKakaoLogin = (req, res) => {
+  // console.log(req.query);
+  const baseUrl = `https://kauth.kakao.com/oauth/authorize`;
+  const config = {
+    client_id: process.env.KAKAO_REST,
+    redirect_uri: process.env.KAKAO_REDIRECT,
+    response_type: "code",
+    scope: "profile_nickname,profile_image,account_email",
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+  console.log(finalUrl);
+  return res.redirect(finalUrl);
+};
+
+export const finishKakaoLogin = async (req, res) => {
+  const baseUrl = "https://kauth.kakao.com/oauth/token";
+  const config = {
+    grant_type: "authorization_code",
+    client_id: process.env.KAKAO_REST,
+    client_secret: process.env.KAKAO_SECRET,
+    redirect_uri: process.env.KAKAO_REDIRECT,
+    code: req.query.code,
+  };
+  const params = new URLSearchParams(config).toString();
+  const finalUrl = `${baseUrl}?${params}`;
+  const tokenRequest = await (
+    await fetch(finalUrl, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+    })
+  ).json();
+  console.log(tokenRequest);
+};
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
